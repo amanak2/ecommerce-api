@@ -1,0 +1,14 @@
+{
+  "name": "e-commerce-api",
+  "version": "1.0.0",
+  "description": "\"originoils e-commerce api\"",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aman Chawla",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
