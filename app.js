@@ -12,7 +12,7 @@ const products = require("./api/routers/products");
 const orders = require("./api/routers/orders");
 
 //MONGOOSE SETUP
-mongoose.connect("mongodb://localhost/e-commerce-api", {
+mongoose.connect("mongodb://localhost:27017/e-commerce-api", {
   useNewUrlParser: true
 });
 
@@ -38,10 +38,6 @@ app.use((req, res, next) => {
 });
 
 //ROUTERS
-app.use("/", (req, res, next) => {
-  res.status(200).json({ message: "ALL OK" });
-});
-
 app.use("/users", users);
 app.use("/products", products);
 app.use("/orders", orders);
