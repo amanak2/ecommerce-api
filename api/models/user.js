@@ -6,10 +6,8 @@ const userSchema = mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String },
   phoneNumber: { type: Number, required: true },
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
   address: String,
-  password: { type: String, required: true },
-  img: String
+  password: { type: String, required: true }
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 
 const Product = require("../models/product");
+const checkAuth = require("../middleware/check-auth");
 
 //IMAGE UPLOADER
 const storage = multer.diskStorage({
@@ -70,7 +71,7 @@ router.get("/:id", (req, res, next) => {
 });
 
 //POST: CREATE NEW PRODUCT
-router.post("/", upload.single("img"), (req, res, next) => {
+router.post("/", checkAuth, upload.single("img"), (req, res, next) => {
   Product.find({ name: req.body.name })
     .exec()
     .then(products => {
@@ -81,6 +82,7 @@ router.post("/", upload.single("img"), (req, res, next) => {
           _id: mongoose.Types.ObjectId(),
           name: req.body.name,
           price: req.body.price,
+          inventory: req.body.inventory,
           img: req.file.path
         });
         product
@@ -90,6 +92,7 @@ router.post("/", upload.single("img"), (req, res, next) => {
               _id: product._id,
               name: product.name,
               price: product.price,
+              inventory: product.inventory,
               img: "http://localhost:3000/" + product.img
             };
             res
@@ -103,7 +106,7 @@ router.post("/", upload.single("img"), (req, res, next) => {
 });
 
 //PATCH: UPDATE PRODUCT BY ID
-router.patch("/:id", (req, res, next) => {
+router.patch("/:id", checkAuth, (req, res, next) => {
   const id = req.params.id;
   const condition = { _id: id };
   const update = {
@@ -120,7 +123,7 @@ router.patch("/:id", (req, res, next) => {
 });
 
 //DELETE: DELETE PRODUCT BY ID
-router.delete("/:id", (req, res, next) => {
+router.delete("/:id", checkAuth, (req, res, next) => {
   const id = req.params.id;
   Product.find({ _id: id })
     .exec()

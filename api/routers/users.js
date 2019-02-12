@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
+const checkAuth = require("../middleware/check-auth");
 
 //POST: SIGN UP
 router.post("/signup", (req, res, next) => {
@@ -35,7 +36,7 @@ router.post("/signup", (req, res, next) => {
                       phoneNumber: req.body.phoneNumber
                     },
                     "KEY",
-                    { expiresIn: "1h" }
+                    { expiresIn: "7d" }
                   );
                   return res
                     .status(201)
@@ -69,7 +70,7 @@ router.post("/login", (req, res, next) => {
                 phoneNumber: req.body.phoneNumber
               },
               "KEY",
-              { expiresIn: "1h" }
+              { expiresIn: "7d" }
             );
             return res
               .status(201)
@@ -77,6 +78,68 @@ router.post("/login", (req, res, next) => {
           }
         });
       }
+    })
+    .catch(err => res.status(500).json({ err }));
+});
+
+//GET: ALL USER
+router.get("/", checkAuth, (req, res, next) => {
+  User.find()
+    .exec()
+    .then(users => {
+      const response = {
+        count: users.length,
+        products: users.map(user => {
+          return {
+            id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phoneNumber: user.phoneNumber,
+            address: user.address,
+            img: "http://localhost:3000/" + user.img
+          };
+        })
+      };
+      res.status(200).json({ users: response });
+    })
+    .catch(err => res.status(500).json({ err }));
+});
+
+//GET: USER BY ID
+router.get("/:id", checkAuth, (req, res, next) => {
+  User.findById(req.params.id)
+    .exec()
+    .then(user => {
+      if (user) {
+        const response = {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phoneNumber: user.phoneNumber,
+          address: user.address,
+          img: "http://localhost:3000/" + user.img
+        };
+        res.status(200).json({ user: response });
+      }
+    })
+    .catch(err => res.status(500).json({ err }));
+});
+
+//PATCH: UPDATE USER BY ID
+router.patch("/:id", checkAuth, (req, res, next) => {
+  const id = req.params.id;
+  const condition = { _id: id };
+  const update = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phoneNumber: req.body.phoneNumber,
+    address: req.body.address,
+    email: req.body.email
+  };
+  User.update(condition, update)
+    .exec()
+    .then(result => {
+      res.status(202).json({ message: "User was updated" });
     })
     .catch(err => res.status(500).json({ err }));
 });
